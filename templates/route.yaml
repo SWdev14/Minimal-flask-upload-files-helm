@@ -1,0 +1,21 @@
+{{ if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "upload.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "upload.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.route.url }}
+  {{ if eq .Values.route.visibility "intranet" }}
+  routeSelector:
+    matchLabels:
+      visibility: {{ .Values.route.visibility }}
+  {{ end }}
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: {{ include "upload.fullname" . }}
+{{ end }}
